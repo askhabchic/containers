@@ -68,9 +68,26 @@ int main(int argc, char** argv) {
 	for ( ; it != ite; ++it) {
 		std::cout << *it << " ";
 	}
-	std::vector<int>::pointer p;
-	alloc.construct(p, vec.at(3));
-	std::cout << "\n" << p << " = " << *p << std::endl;
+	std::cout << std::endl;
+	std::vector<int> v2(6, 2);
+	vec.assign(v2.operator[](0), v2.operator[](5));
+	// vec.insert(vec.begin(), 1, 2);
+	it = vec.begin();
+	ite = vec.end();
+	for ( ; it != ite; ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+	vec.assign(6, 111111);
+	it = vec.begin();
+	ite = vec.end();
+	for ( ; it != ite; ++it) {
+		std::cout << *it << " ";
+	}
+	std::equal();
+	// std::vector<int>::pointer p;
+	// alloc.construct(p, vec.at(3));
+	// std::cout << "\n" << p << " = " << *p << std::endl;
 	// std::cout << "before[1] = " << vec.operator[](1) << "\n";
 	// std::cout << "before[2] = " << vec.operator[](2) << "\n";
 	// vec.erase((vec.begin() + 1), (vec.begin() + 2));
