@@ -9,13 +9,13 @@ namespace ft {
 										typename iterator_traits<T*>::value_type,
 										typename iterator_traits<T*>::pointer,
 										typename iterator_traits<T*>::reference,
-										typename iterator_traits<T*>::iterator_iategory>	{
+										typename iterator_traits<T*>::iterator_category>	{
 	public:
 		typedef typename iterator<ft::random_access_iterator_tag, T>::difference_type		difference_type;
 		typedef typename iterator<ft::random_access_iterator_tag, T>::value_type			value_type;
 		typedef typename iterator<ft::random_access_iterator_tag, T>::pointer				pointer;
 		typedef typename iterator<ft::random_access_iterator_tag, T>::reference				reference;
-		typedef typename iterator<ft::random_access_iterator_tag, T>::iterator_iategory 	iterator_iategory;	
+		typedef typename iterator<ft::random_access_iterator_tag, T>::iterator_category 	iterator_category;	
 	
 	protected:
 		pointer			_it;
@@ -40,14 +40,6 @@ namespace ft {
 		reference 	operator[](difference_type n) const 						{ return *(*_it + n); };
 		pointer		base() const												{ return _it; };
 		~iterator_v() 															{};
-
-		bool		operator==(const iterator_v& rhs) const						{ return (*this == rhs); };
-		bool		operator!=(const iterator_v& rhs) const						{ return !(*this == rhs); };
-		bool 		operator< (const iterator_v& rhs) const 					{ return _it < rhs._it; }
-		bool 		operator> (const iterator_v& rhs) const 					{ return _it > rhs._it; }
-		bool 		operator<= (const iterator_v& rhs) const 					{ return !(_it < rhs._it); }
-		bool 		operator>= (const iterator_v& rhs) const 					{ return !(_it > rhs._it); }
-
 	};
 
 	// Non-member function overloads:
@@ -57,23 +49,23 @@ namespace ft {
 	
 	template <class T>
 	bool operator!= (const iterator_v<T>& lhs, const iterator_v<T>& rhs) {
-		return lhs != rhs;		};
+		return !(lhs == rhs);		};
 
 	template <class T>
 	bool operator<  (const iterator_v<T>& lhs, const iterator_v<T>& rhs) {
-		return lhs < rhs;		};
+		return lhs.base() < rhs.base();		};
 
 	template <class T>
 	bool operator>  (const iterator_v<T>& lhs, const iterator_v<T>& rhs) {
-		return lhs > rhs;		};
+		return lhs.base() > rhs.base();		};
 
 	template <class T>
 	bool operator<= (const iterator_v<T>& lhs, const iterator_v<T>& rhs) {
-		return lhs <= rhs;		};
+		return lhs.base() <= rhs.base();		};
 	
 	template <class T>
 	bool operator>= (const iterator_v<T>& lhs, const iterator_v<T>& rhs) {
-		return lhs >= rhs;		};
+		return lhs.base() >= rhs.base();		};
 }
 
 #endif

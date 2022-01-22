@@ -48,6 +48,19 @@ struct Buffer
 // 	iterator begin() { return this->c.begin(); }
 // 	iterator end() { return this->c.end(); }
 // };
+template <T>
+class it {
+	operator ++ ()
+	T *i;
+};
+
+class rev_it {
+
+	operator ++(){
+		i--;
+	}
+	it i;
+};
 
 int main(int argc, char** argv) {
 	std::vector<int> vec;
@@ -62,29 +75,47 @@ int main(int argc, char** argv) {
 	std::vector<int>::iterator it = vec.begin();
 	std::vector<int>::iterator ite = vec.end();
 	std::vector<int>::allocator_type alloc;
+	std::cout << "\nsize - " << vec.size() << "\n";
+	std::cout << "capacity - " << vec.capacity() << "\n";
+	it = vec.begin();
+	ite = vec.end();
+	std::cout << "begin = " << *it << "\n";
+	std::cout << "end = " << *(ite - 1) << "\n";
+	for ( ; it != ite; ++it) {
+		std::cout << *it << " ";
+	}
+	vec.insert(vec.begin() + 2, 11, 99);
+	std::cout << "\nsize - " << vec.size() << "\n";
+	std::cout << "capacity - " << vec.capacity() << "\n";
+	it = vec.begin();
+	ite = vec.end();
+	std::cout << "begin = " << *it << "\n";
+	std::cout << "end = " << *(ite - 1) << "\n";
+	for ( ; it != ite; ++it) {
+		std::cout << *it << " ";
+	}
 	// std::vector<int>::allocator_type alloc_v = v.get_allocator();
 	// std::__swap_allocator(alloc, alloc_v);
 	//  = &vec[1];
-	for ( ; it != ite; ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-	std::vector<int> v2(6, 2);
-	vec.assign(v2.operator[](0), v2.operator[](5));
+	// for ( ; it != ite; ++it) {
+	// 	std::cout << *it << " ";
+	// }
+	// std::cout << std::endl;
+	// std::vector<int> v2(6, 2);
+	// vec.assign(v2.operator[](0), v2.operator[](5));
 	// vec.insert(vec.begin(), 1, 2);
-	it = vec.begin();
-	ite = vec.end();
-	for ( ; it != ite; ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-	vec.assign(6, 111111);
-	it = vec.begin();
-	ite = vec.end();
-	for ( ; it != ite; ++it) {
-		std::cout << *it << " ";
-	}
-	std::equal();
+	// std::cout << std::endl;
+	// std::cout << "size - " << vec.size() << "\n";
+	// std::cout << "capacity - " << vec.capacity() << "\n";
+	// it = vec.begin();
+	// ite = vec.end();
+	// std::cout << "begin = " << *it << "\n";
+	// std::cout << "end = " << *ite << "\n";
+	// for ( ; it != ite; ++it) {
+	// 	std::cout << *it << " ";
+	// }
+	// vec.assign(6, 111111);
+	// std::equal();
 	// std::vector<int>::pointer p;
 	// alloc.construct(p, vec.at(3));
 	// std::cout << "\n" << p << " = " << *p << std::endl;

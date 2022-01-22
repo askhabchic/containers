@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include "iterator.hpp"
 #include "iterator_v.hpp"
+#include "reverse_iterator.hpp"
 #include "utils.hpp"
 #include <iostream>
 // #include <algorithm>
@@ -23,85 +24,10 @@ namespace ft {
 		typedef typename allocator_type::const_pointer 					const_pointer;
 		typedef typename ft::iterator_v<T>::iterator					iterator;        			
 		typedef typename ft::iterator_v<T>::const_iterator				const_iterator;  			
-		typedef typename std::reverse_iterator<iterator>				reverse_iterator;		//поменять на свой итератор
-		typedef typename std::reverse_iterator<const_iterator>			const_reverse_iterator;		//поменять на свой итератор
+		typedef typename ft::reverse_iterator<iterator>					reverse_iterator;
+		typedef typename ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 		typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
 
-
-		//(constructor)
-		// explicit vector (const allocator_type& alloc = allocator_type()); //empty container constructor (default constructor)
-		// explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()); //fill constructor
-		// template <class InputIterator>
-		// vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()); //range constructor
-		// vector (const vector& x); //copy constructor
-
-		//(destructor)
-		// virtual 					~vector();
-
-		//operator=
-		// vector& 					operator= (const vector& x);
-
-		//iterators
-		// iterator 					begin();
-		// const_iterator 				begin() const;
-		// iterator 					end();
-		// const_iterator 				end() const;
-		// reverse_iterator 			rbegin();
-		// const_reverse_iterator 		rbegin() const;
-		// reverse_iterator 			rend();
-		// const_reverse_iterator 		rend() const;
-		
-		//capacity
-		// size_type 					size() const;
-		// size_type 					max_size() const;
-		// void 						resize (size_type n, value_type val = value_type());
-		// size_type 					capacity() const;
-		// bool 						empty() const;
-		// void 						reserve (size_type n);
-
-		//Element access:
-		// reference 					operator[] (size_type n);
-		// const_reference 				operator[] (size_type n) const;
-		// reference 					at (size_type n);
-		// const_reference 				at (size_type n) const;
-		// reference 					front();
-		// const_reference 				front() const;
-		// reference 					back();
-		// const_reference 				back() const;
-
-		//Modifiers:
-		// template <class InputIterator>
-  		// void 						assign (InputIterator first, InputIterator last);	//range
-		// void 						assign (size_type n, const value_type& val);  		//fill
-		// void 						push_back (const value_type& val);
-		// void 						pop_back();
-		// iterator 					insert (iterator position, const value_type& val); //single element
-		// void 						insert (iterator position, size_type n, const value_type& val);  //fill
-		// template <class InputIterator>
-		// void 						insert (iterator position, InputIterator first, InputIterator last); //range
-		// iterator 					erase (iterator position);
-		// iterator 					erase (iterator first, iterator last);
-		// void 						swap (vector& x);
-		// void 						clear();
-
-		//Allocator:
-		// allocator_type 				get_allocator() const;
-
-		//Non-member function overloads:
-		// template <class T, class Alloc>
-			// bool 					operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-		// template <class T, class Alloc>
-			// bool 					operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-		// template <class T, class Alloc>
-			// bool 					operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-		// template <class T, class Alloc>
-			// bool 					operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-		// template <class T, class Alloc>
-	  		// bool 					operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-		// template <class T, class Alloc>
-	  		// bool 					operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-		// template <class T, class Alloc>
-  			// void 					swap (vector<T,Alloc>& x, vector<T,Alloc>& y);
 
 		// Construstors:	
 		explicit vector (const allocator_type& allocator = allocator_type()) : _begin(NULL), _end(NULL), _cap_end(NULL), _alloc(allocator) {
@@ -160,66 +86,79 @@ namespace ft {
 
 
 		void		insert (iterator position, size_type n, const value_type& val) {
-			size_type new_cap = capacity_alloc(n);
+			value_type tmp = val;
 			if (!n)
 				return ;
-			else if (max_size() - size() < n)
-				throw std::length_error("vector<T>::insert: length error");
+			else if (n > max_size() - size())
+				throw std::length_error("vector<T> length error");
 			else if (size() + n > capacity()) {
-				pointer new_ptr = _alloc.allocate(new_cap);
+				pointer ptr = _alloc.allocate(capacity_alloc(n));
 				pointer tmp_ptr;
-				// try	{
-					tmp_ptr = copy(begin(), position, new_ptr);
-					tmp_ptr = fill(tmp_ptr, n, val);
-					reallocate(position, end(), tmp_ptr, new_cap);
-					// copy(position, end(), tmp_ptr);
-				// }
-				// catch(const std::exception& e)	{
-					// destroy_dealloc(new_ptr, tmp_ptr, new_cap);
-					// std::cerr << e.what() << '\n';
-				// }
-				// if (_begin != 0) {
-					// destroy_dealloc(_begin, _end, _end - _begin);
-					_begin = new_ptr;
-					_end = new_ptr + size() + n;
-					_cap_end = new_ptr + new_cap;
-				// }
-				if (static_cast<size_type>(end() - position) < n) {
-					copy
+				try	{
+					tmp_ptr = copy(begin(), position, ptr);
+					tmp_ptr = fill(tmp_ptr, n, tmp);
+					copy(position, end(), tmp_ptr);
+				}
+				catch(const std::bad_alloc& ba)	{
+					destroy_dealloc(ptr, tmp_ptr, capacity_alloc(n));
+					std::cerr << "bad_alloc caught: " << ba.what() << '\n';
+				}
+				if (_begin) {
+					destroy_dealloc(_begin, _end, static_cast<size_type>(_end - _begin));
+					_begin = ptr;
+					_end = _begin + size() + n;
+					_cap_end = _begin + capacity_alloc(n);
 				}
 			}
+			else if (static_cast<size_type>(end() - position) < n) {
+				pointer pos_n = position.base() + n;
+				copy(position, end(), pos_n);
+				try	{
+					fill(_end, n - (end() - position), tmp); }
+				catch(const std::bad_alloc& ba)	{
+					for ( ; pos_n != _end + n; ++pos_n)
+						_alloc.destroy(pos_n);
+					std::cerr << "bad_alloc caught: " << ba.what() << '\n';
+				}
+				_end += n;
+				fill_st(position, end() - n, tmp);
+			}
+			else {
+				iterator tmp = end();
+				_end = copy(tmp - n, tmp, _end);
+				copy_backward(position, tmp - n, tmp);
+				fill_st(position, position + n, tmp);
+			}
 			
+
+
 			// value_type tmp = val;
 			// size_type s = capacity();
 			// if (n == 0) ;
 			// else if (n > max_size() - size())
 			// 	throw std::length_error("vector<T> length error");
-			// else if (size() + n > capacity()) {
+			// else if (size() + n > s) {
 			// 	s = max_size() - s / 2 < s ? 0 : s + s / 2;
 			// 	if (s < size() + n)
 			// 		s = size() + n;
 			// }
-			// pointer Ptr = _alloc.allocate(s);
-			// pointer Pcopy;
+			// pointer ptr = _alloc.allocate(s);
+			// pointer pcopy;
 			// try	{
-			// 	Pcopy = copy(begin(), position, Ptr);
-			// 	Pcopy = fill(Pcopy, n, tmp);
-			// 	copy(position, end(), Pcopy);
+				// pcopy = copy(begin(), position, ptr);
+				// pcopy = fill(pcopy, n, tmp);
+				// copy(position, end(), pcopy);
 			// }
 			// catch(const std::bad_alloc& ba)	{
-			// 	for (; Ptr != Pcopy; ++Ptr)
-			// 		_alloc.destroy(Ptr);
-			// 	_alloc.deallocate(Ptr, s);
-			// 	std::cerr << "bad_alloc caught: " << ba.what() << '\n';
-			// 	throw ;
+				// destroy_dealloc(ptr, pcopy, s);
+				// std::cerr << "bad_alloc caught: " << ba.what() << '\n';
+				// throw ;
 			// }
 			// if (_begin != 0) {
-			// 	for (; _begin != _end; ++_begin)
-			// 		_alloc.destroy(_begin);
-			// 	_alloc.deallocate(_begin, _end - _begin);
-			// 	_end = Ptr + s;
-			// 	_cap_end = Ptr + size() + n;
-			// 	_begin = Ptr;
+				// destroy_dealloc(_begin, _end, _end - _begin);
+				// _end = ptr + s;
+				// _cap_end = ptr + size() + n;
+				// _begin = ptr;
 			// }
 			// else if ((size_type) (end() - position) < n) {
 			// 	copy(position, end(), position.base() + n);
@@ -232,12 +171,14 @@ namespace ft {
 			// 		std::cerr << "bad_alloc caught: " << ba.what() << '\n';
 			// 		throw;
 			// 	}
+			// 	_end += n;
+			// 	ft::fill_st(position, end() - n, tmp);
 			// }
 			// else {
 			// 	iterator n_end = end();
 			// 	_end = copy(n_end - n, n_end, _end);
 			// 	ft::copy_backward(position, n_end - n, tmp);
-			// 	fill(position, position + n, tmp);
+			// 	ft::fill_st(position, position + n, tmp);
 			// }
 		}
 
@@ -328,18 +269,29 @@ namespace ft {
 		pointer				_end;
 		pointer				_cap_end;
 
+		template <class initer>
+		typename vector<initer>::difference_type distance (initer first, initer last) {
+			difference_type n = 0;
+			for (; first != last; ++first) {
+				++n;
+				if (first == last)
+					return n;
+			}
+			return n;
+		}
+
 		void	destroy_dealloc(pointer first, pointer last, size_type n) {
 			for (; first != last; ++first)
 				_alloc.destroy(first);
 			_alloc.deallocate(first, n);
 		}
+
 		size_type capacity_alloc(size_type n) {
-			if (n > capacity() * 2 || capacity() == 0)
-				return n;
-			else if (n > capacity() && capacity() > 0)
-				return size() * 2;
-			else
-				return capacity();
+			size_type new_cap = capacity();
+			new_cap = max_size() - capacity() / 2 < new_cap ? 0 : new_cap + new_cap / 2;
+			if (new_cap < size() + n)
+				new_cap = size() + n;
+			return new_cap;
 		}
 
 		void reallocate(iterator first, iterator last, pointer ptr, size_type n) {
@@ -381,11 +333,12 @@ namespace ft {
 			}
 			return P;
 		}
+
 		pointer fill(pointer P, size_type n, const value_type& val) {
 			pointer tmp = P;
 			try	{
 				for (; 0 < n; --n, ++P)
-					_alloc.construct(P, *val);
+					_alloc.construct(P, val);
 			}
 			catch(const std::bad_alloc& ba) {
 				for (; tmp != P; ++tmp)
@@ -418,5 +371,81 @@ namespace ft {
 		template <class T, class Alloc>
   		void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) { x.swap(y); }
 }
+
+
+		//(constructor)
+		// explicit vector (const allocator_type& alloc = allocator_type()); //empty container constructor (default constructor)
+		// explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()); //fill constructor
+		// template <class InputIterator>
+		// vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()); //range constructor
+		// vector (const vector& x); //copy constructor
+
+		//(destructor)
+		// virtual 					~vector();
+
+		//operator=
+		// vector& 					operator= (const vector& x);
+
+		//iterators
+		// iterator 					begin();
+		// const_iterator 				begin() const;
+		// iterator 					end();
+		// const_iterator 				end() const;
+		// reverse_iterator 			rbegin();
+		// const_reverse_iterator 		rbegin() const;
+		// reverse_iterator 			rend();
+		// const_reverse_iterator 		rend() const;
+		
+		//capacity
+		// size_type 					size() const;
+		// size_type 					max_size() const;
+		// void 						resize (size_type n, value_type val = value_type());
+		// size_type 					capacity() const;
+		// bool 						empty() const;
+		// void 						reserve (size_type n);
+
+		//Element access:
+		// reference 					operator[] (size_type n);
+		// const_reference 				operator[] (size_type n) const;
+		// reference 					at (size_type n);
+		// const_reference 				at (size_type n) const;
+		// reference 					front();
+		// const_reference 				front() const;
+		// reference 					back();
+		// const_reference 				back() const;
+
+		//Modifiers:
+		// template <class InputIterator>
+  		// void 						assign (InputIterator first, InputIterator last);	//range
+		// void 						assign (size_type n, const value_type& val);  		//fill
+		// void 						push_back (const value_type& val);
+		// void 						pop_back();
+		// iterator 					insert (iterator position, const value_type& val); //single element
+		// void 						insert (iterator position, size_type n, const value_type& val);  //fill
+		// template <class InputIterator>
+		// void 						insert (iterator position, InputIterator first, InputIterator last); //range
+		// iterator 					erase (iterator position);
+		// iterator 					erase (iterator first, iterator last);
+		// void 						swap (vector& x);
+		// void 						clear();
+
+		//Allocator:
+		// allocator_type 				get_allocator() const;
+
+		//Non-member function overloads:
+		// template <class T, class Alloc>
+			// bool 					operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+		// template <class T, class Alloc>
+			// bool 					operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+		// template <class T, class Alloc>
+			// bool 					operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+		// template <class T, class Alloc>
+			// bool 					operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+		// template <class T, class Alloc>
+	  		// bool 					operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+		// template <class T, class Alloc>
+	  		// bool 					operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+		// template <class T, class Alloc>
+  			// void 					swap (vector<T,Alloc>& x, vector<T,Alloc>& y);
 
 #endif
