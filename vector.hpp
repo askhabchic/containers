@@ -36,6 +36,8 @@ namespace ft {
 		explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& allocator = allocator_type()) {
 			try			{
 				_begin = allocator.allocate(n);
+				_end = _begin + n;
+
 			}
 			catch(const std::bad_alloc& e)
 			{
@@ -44,14 +46,18 @@ namespace ft {
 		}; //fill constructor
 
 		template <class InputIterator>
-		vector (InputIterator first, InputIterator last, const allocator_type& allocator = allocator_type()); //range constructor
+		vector (InputIterator first, InputIterator last, const allocator_type& allocator = allocator_type()) {
+			typename enable_if<is_integral<InputIterator>::value>
+		} //range constructor
 		
-		vector (const vector& x); //copy constructor
+		vector (const vector& x) {
+
+		} //copy constructor
 
 		//operator=
 		vector& 					operator= (const vector& x) {
 			erase(begin(), end());
-			insert(x.begin(), x.end());
+			insert(begin(), x.begin(), x.end());
 		}
 
 		//iterators
