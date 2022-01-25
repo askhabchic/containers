@@ -94,6 +94,8 @@ int main(int argc, char** argv) {
 	for ( ; it != ite; ++it) {
 		std::cout << *it << " ";
 	}
+	// const std::string str = "test";
+	// std::vector<std::string> vec_string(str);
 	// std::vector<int>::allocator_type alloc_v = v.get_allocator();
 	// std::__swap_allocator(alloc, alloc_v);
 	//  = &vec[1];

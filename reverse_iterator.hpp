@@ -6,7 +6,7 @@
 
 namespace ft {
 	template<class Iterator>
-	class reverse_iterator : public iterator_v<ft::random_access_iterator_tag>	{
+	class reverse_iterator : public iterator_v<Iterator>	{
 	public:
 		typedef	Iterator																		iterator_type;
 		typedef typename iterator<ft::random_access_iterator_tag, Iterator>::difference_type	difference_type;
@@ -38,6 +38,8 @@ namespace ft {
 		reverse_iterator operator- (difference_type n) const { reverse_iterator tmp = *this; return tmp + n; 	}
 		reverse_iterator operator+ (difference_type n) const 							   { return *this -(n); }
 		reference operator[] (difference_type n) const 									   { return *(*_it + n); }
+
+		
 	};
 
 	template <class Iterator>

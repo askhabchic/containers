@@ -6,11 +6,12 @@
 namespace ft {
 	template<class T>
 	class iterator_v : public iterator< typename iterator_traits<T*>::difference_type,
-										typename iterator_traits<T*>::value_type,
-										typename iterator_traits<T*>::pointer,
-										typename iterator_traits<T*>::reference,
+										typename iterator_traits<T*>::value_type,		
+										typename iterator_traits<T*>::pointer,			
+										typename iterator_traits<T*>::reference,			
 										typename iterator_traits<T*>::iterator_category>	{
 	public:
+		typedef T																			iterator_type;
 		typedef typename iterator<ft::random_access_iterator_tag, T>::difference_type		difference_type;
 		typedef typename iterator<ft::random_access_iterator_tag, T>::value_type			value_type;
 		typedef typename iterator<ft::random_access_iterator_tag, T>::pointer				pointer;
@@ -23,9 +24,15 @@ namespace ft {
 	public:
 		// Member functions:
 		iterator_v() : _it(NULL) {};
+		explicit iterator_v (iterator_type it) : _it(it) {}
 		template <class Vi>
-		iterator_v(const iterator_v<Vi> & _vit) : _it(_vit._it) {};
-
+		iterator_v(const iterator_v<Vi> & vit) : _it(vit._it) {};
+		template <class Vi>
+		iterator_v& operator=(const iterator_v<Vi> & vit) {
+			_it = vit._it;
+			return *this;
+		}
+		~iterator_v() 															{};
 		
 		reference 	operator*() const 											{ return *_it; };
 		pointer 	operator->() const 											{ return _it; };
@@ -39,7 +46,21 @@ namespace ft {
 		iterator_v&	operator-=(difference_type n) 								{ return *this += -n; };
 		reference 	operator[](difference_type n) const 						{ return *(*_it + n); };
 		pointer		base() const												{ return _it; };
-		~iterator_v() 															{};
+
+		bool operator== (const iterator_v& rhs) {
+			return _it == rhs._it;
+		}
+
+		bool operator!= (const iterator_v& rhs) {
+			return !(_it == rhs._it);
+		}
+
+		// friend bool operator==  (const iterator_v<T>& lhs, const iterator_v<T>& rhs);
+		// friend bool operator!=  (const iterator_v<T>& lhs, const iterator_v<T>& rhs);
+		friend bool operator<  (const iterator_v<T>& lhs, const iterator_v<T>& rhs);
+		friend bool operator>  (const iterator_v<T>& lhs, const iterator_v<T>& rhs);
+		friend bool operator<= (const iterator_v<T>& lhs, const iterator_v<T>& rhs);
+		friend bool operator>= (const iterator_v<T>& lhs, const iterator_v<T>& rhs);
 	};
 
 	// Non-member function overloads:

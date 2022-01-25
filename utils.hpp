@@ -2,19 +2,21 @@
 #define UTILS_HPP
 
 #include <iostream>
+#include "iterator.hpp"
+#include "iterator_v.hpp"
 
 namespace ft {
 
 	template <bool, class T = void>
 	struct enable_if {};
 
-	template <class T> 
-	struct enable_if<true, T> {typedef T type;};
+	template <class T>
+	struct enable_if<false, T> {typedef T type;};
 
-	template <class _Tp, _Tp __v>
+	template <class Tp, Tp v>
 	struct integral_constant	{
-	    static  const _Tp      		value = __v;
-	    typedef _Tp               	value_type;
+	    static  const Tp      		value = v;
+	    typedef Tp               	value_type;
 	    typedef integral_constant 	type;
 	    operator value_type() const {return value;}
 	};
@@ -40,6 +42,9 @@ namespace ft {
 	template <>        struct is_integral<unsigned long long> : public true_type {};
 	template <>        struct is_integral<__int128_t>         : public true_type {};
 	template <>        struct is_integral<__uint128_t>        : public true_type {};
+
+
+
 
 	template <class T1, class T2>
 	T1 copy_st(T1 first, T1 last, const T2& val) {
@@ -83,6 +88,10 @@ namespace ft {
 	}
 
 
+	template<class RandomIter, class D>
+	void Distance(RandomIter first, RandomIter last, D& n) {
+		n += last - first;
+	}
 
 }
 

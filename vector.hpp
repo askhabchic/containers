@@ -9,7 +9,9 @@
 #include "reverse_iterator.hpp"
 #include "utils.hpp"
 #include <iostream>
-// #include <algorithm>
+
+#define ENABLE_IF_IS_INTEGRAL(value_type) \
+ typename enable_if<is_integral< value_type >::value, bool>::type
 
 namespace ft {
 	template <class T, class alloc = std::allocator<T> > // generic template
@@ -23,7 +25,7 @@ namespace ft {
 		typedef typename allocator_type::pointer 						pointer;
 		typedef typename allocator_type::const_pointer 					const_pointer;
 		typedef typename ft::iterator_v<T>::iterator					iterator;        			
-		typedef typename ft::iterator_v<T>::const_iterator				const_iterator;  			
+		typedef typename ft::iterator_v<const T>::iterator				const_iterator;  			
 		typedef typename ft::reverse_iterator<iterator>					reverse_iterator;
 		typedef typename ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 		typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
@@ -33,11 +35,10 @@ namespace ft {
 		explicit vector (const allocator_type& allocator = allocator_type()) : _begin(NULL), _end(NULL), _cap_end(NULL), _alloc(allocator) {
 			}; //empty container constructor (default constructor)
 
-		explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& allocator = allocator_type()) {
+		explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& allocator = allocator_type()) : _alloc(allocator) {
 			try			{
-				_begin = allocator.allocate(n);
-				_end = _begin + n;
-
+				_begin = _alloc.allocate(n);
+				insert(begin(), n, val);
 			}
 			catch(const std::bad_alloc& e)
 			{
@@ -46,18 +47,27 @@ namespace ft {
 		}; //fill constructor
 
 		template <class InputIterator>
-		vector (InputIterator first, InputIterator last, const allocator_type& allocator = allocator_type()) {
-			typename enable_if<is_integral<InputIterator>::value>
+		vector (ENABLE_IF_IS_INTEGRAL(InputIterator) first, InputIterator last, const allocator_type& allocator = allocator_type()) : _alloc(allocator) {
+			difference_type dif = distance(first, last);
+			if (dif > 0) {
+				_begin = _alloc.allocate(dif);
+				insert(begin(), first, last);
+			}
 		} //range constructor
 		
-		vector (const vector& x) {
-
+		vector (const vector& x) : _alloc(x._alloc) {
+			*this = x;
+			insert(begin(), x.begin(), x.end());
 		} //copy constructor
 
 		//operator=
 		vector& 					operator= (const vector& x) {
-			erase(begin(), end());
-			insert(begin(), x.begin(), x.end());
+			assign(x.begin(), x.end());
+		}
+		//(destructor)
+		~vector() {
+			if (_begin != 0 && _end != 0)
+				destroy_dealloc(_begin, _end, capacity());
 		}
 
 		//iterators
@@ -72,7 +82,7 @@ namespace ft {
 
 		//Modifiers:
 		template <class InputIterator>
-  		void 		assign (InputIterator first, InputIterator last) { //range
+  		void 		assign (ENABLE_IF_IS_INTEGRAL(InputIterator) first, InputIterator last) { //range
 			if (first > last)
 		  		throw std::range_error("vector<T>::assign: range error");
 			erase(begin(), end());
@@ -116,7 +126,7 @@ namespace ft {
 					_cap_end = _begin + capacity_alloc(n);
 				}
 			}
-			else if (static_cast<size_type>(end() - position) < n) {
+			else if (distance(position, end()) < n) {
 				pointer pos_n = position.base() + n;
 				copy(position, end(), pos_n);
 				try	{
@@ -135,63 +145,24 @@ namespace ft {
 				copy_backward(position, tmp - n, tmp);
 				fill_st(position, position + n, tmp);
 			}
-			
-
-
-			// value_type tmp = val;
-			// size_type s = capacity();
-			// if (n == 0) ;
-			// else if (n > max_size() - size())
-			// 	throw std::length_error("vector<T> length error");
-			// else if (size() + n > s) {
-			// 	s = max_size() - s / 2 < s ? 0 : s + s / 2;
-			// 	if (s < size() + n)
-			// 		s = size() + n;
-			// }
-			// pointer ptr = _alloc.allocate(s);
-			// pointer pcopy;
-			// try	{
-				// pcopy = copy(begin(), position, ptr);
-				// pcopy = fill(pcopy, n, tmp);
-				// copy(position, end(), pcopy);
-			// }
-			// catch(const std::bad_alloc& ba)	{
-				// destroy_dealloc(ptr, pcopy, s);
-				// std::cerr << "bad_alloc caught: " << ba.what() << '\n';
-				// throw ;
-			// }
-			// if (_begin != 0) {
-				// destroy_dealloc(_begin, _end, _end - _begin);
-				// _end = ptr + s;
-				// _cap_end = ptr + size() + n;
-				// _begin = ptr;
-			// }
-			// else if ((size_type) (end() - position) < n) {
-			// 	copy(position, end(), position.base() + n);
-			// 	try	{
-			// 		fill(_end, n - (end() - position), tmp);
-			// 	}
-			// 	catch(const std::bad_alloc& ba)	{
-			// 		for (; (position.base() + n) != _end + n; ++(position.base() + n))
-			// 			_alloc.destroy(position.base() + n);
-			// 		std::cerr << "bad_alloc caught: " << ba.what() << '\n';
-			// 		throw;
-			// 	}
-			// 	_end += n;
-			// 	ft::fill_st(position, end() - n, tmp);
-			// }
-			// else {
-			// 	iterator n_end = end();
-			// 	_end = copy(n_end - n, n_end, _end);
-			// 	ft::copy_backward(position, n_end - n, tmp);
-			// 	ft::fill_st(position, position + n, tmp);
-			// }
 		}
+
+
+
 
 		template <class InputIterator>
-		void		insert (iterator position, InputIterator first, InputIterator last) {
-			// if ()
+		void		insert (iterator position, ENABLE_IF_IS_INTEGRAL(InputIterator) first, InputIterator last) {
+			if (first != last) {
+				for (InputIterator it = first; it != last; ++it)
+					insert(position, *it);
+			}
 		}
+
+
+
+
+
+
 		void 		push_back (const value_type& val) {
 			insert(end(), val);
 		};
@@ -274,6 +245,13 @@ namespace ft {
 		pointer				_begin;
 		pointer				_end;
 		pointer				_cap_end;
+
+		// template<class InIt> inline
+		// difference_type distance(InIt first, InIt last) {
+		// 	difference_type n = 0;
+		// 	Distance(first, last, n);
+		// return n;	
+	// }
 
 		template <class initer>
 		typename vector<initer>::difference_type distance (initer first, initer last) {
