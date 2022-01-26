@@ -2,24 +2,26 @@
 #define ITERATOR_V_HPP
 
 #include "iterator.hpp"
+#include "utils.hpp"
 
 namespace ft {
 	template<class T>
-	class iterator_v : public iterator< typename iterator_traits<T*>::difference_type,
-										typename iterator_traits<T*>::value_type,		
-										typename iterator_traits<T*>::pointer,			
-										typename iterator_traits<T*>::reference,			
-										typename iterator_traits<T*>::iterator_category>	{
+	class iterator_v { /*
+	: public iterator< typename iterator_traits<T*>::difference_type,
+										typename iterator_traits<iterator_type>::value_type,		
+										typename iterator_traits<iterator_type>::pointer,			
+										typename iterator_traits<iterator_type>::reference,			
+										typename iterator_traits<iterator_type>::iterator_category>	*/
 	public:
-		typedef T																			iterator_type;
-		typedef typename iterator<ft::random_access_iterator_tag, T>::difference_type		difference_type;
-		typedef typename iterator<ft::random_access_iterator_tag, T>::value_type			value_type;
-		typedef typename iterator<ft::random_access_iterator_tag, T>::pointer				pointer;
-		typedef typename iterator<ft::random_access_iterator_tag, T>::reference				reference;
-		typedef typename iterator<ft::random_access_iterator_tag, T>::iterator_category 	iterator_category;	
+		typedef T																	iterator_type;
+		typedef typename ft::iterator_traits<iterator_type>::difference_type		difference_type;
+		typedef typename ft::iterator_traits<iterator_type>::value_type				value_type;
+		typedef typename ft::iterator_traits<iterator_type>::pointer				pointer;
+		typedef typename ft::iterator_traits<iterator_type>::reference				reference;
+		typedef typename ft::iterator_traits<iterator_type>::iterator_category	 	iterator_category;	
 	
 	protected:
-		pointer			_it;
+		iterator_type			_it;
 	
 	public:
 		// Member functions:
@@ -34,8 +36,8 @@ namespace ft {
 		}
 		~iterator_v() 															{};
 		
-		reference 	operator*() const 											{ return *_it; };
-		pointer 	operator->() const 											{ return _it; };
+		reference 	operator*() const 											{ return _it; };
+		pointer 	operator->() const 											{ return *_it; };
 		iterator_v&	operator++() 										 { ++_it; return *this; };
 		iterator_v 	operator++(int) 			   { iterator_v tmp = _it; ++_it; return tmp; };
 		iterator_v&	operator--() 										 { --_it; return *this; };
@@ -54,9 +56,25 @@ namespace ft {
 		bool operator!= (const iterator_v& rhs) {
 			return !(_it == rhs._it);
 		}
+		bool operator<  (const iterator_v<T>& rhs) {
+			return _it < rhs._it;
+		}
 
-		// friend bool operator==  (const iterator_v<T>& lhs, const iterator_v<T>& rhs);
-		// friend bool operator!=  (const iterator_v<T>& lhs, const iterator_v<T>& rhs);
+		bool operator>  (const iterator_v<T>& rhs) {
+			return _it > rhs._it;
+		}
+
+		bool operator<= (const iterator_v<T>& rhs) {
+			return _it <= rhs._it;
+		}
+
+		bool operator>= (const iterator_v<T>& rhs) {
+			return _it >= rhs._it;
+		}
+
+
+		friend bool operator==  (const iterator_v<T>& lhs, const iterator_v<T>& rhs);
+		friend bool operator!=  (const iterator_v<T>& lhs, const iterator_v<T>& rhs);
 		friend bool operator<  (const iterator_v<T>& lhs, const iterator_v<T>& rhs);
 		friend bool operator>  (const iterator_v<T>& lhs, const iterator_v<T>& rhs);
 		friend bool operator<= (const iterator_v<T>& lhs, const iterator_v<T>& rhs);

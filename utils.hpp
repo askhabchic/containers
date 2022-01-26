@@ -5,13 +5,19 @@
 #include "iterator.hpp"
 #include "iterator_v.hpp"
 
+#define ENABLE_IF_IS_INTEGRAL(value_type) \
+ typename enable_if<is_integral< value_type >::value, bool>::type
+
+#define ENABLE_IF_IS_NOT_INTEGRAL(value_type) \
+ typename enable_if<!is_integral< value_type >::value, bool>::type
+
 namespace ft {
 
 	template <bool, class T = void>
 	struct enable_if {};
 
 	template <class T>
-	struct enable_if<false, T> {typedef T type;};
+	struct enable_if<true, T> {typedef T type;};
 
 	template <class Tp, Tp v>
 	struct integral_constant	{
@@ -43,9 +49,6 @@ namespace ft {
 	template <>        struct is_integral<__int128_t>         : public true_type {};
 	template <>        struct is_integral<__uint128_t>        : public true_type {};
 
-
-
-
 	template <class T1, class T2>
 	T1 copy_st(T1 first, T1 last, const T2& val) {
 		for (; first != last; ++val, ++first)
@@ -53,14 +56,25 @@ namespace ft {
 		return val;
 	}
 
-	template <class T1, class T2>
-	void fill_st(T1 first, T1 last, const T2& val) {
+	template <class T1, class value_type>
+	void fill_st(T1 first, T1 last, value_type& val) {
 		for ( ; first != last; ++first)
 			*first = val;
 	}
 
+// template <class Tp, class Up> inline
+// typename enable_if<std::is_same<typename std::remove_const<Tp>::type, Up>::value &&
+//     std::is_trivially_copy_assignable<Up>::value, Up*>::type copy_backward(Tp* first, Tp* last, Up* result) {
+//     const size_t n = static_cast<size_t>(last - first);
+//     if (n > 0)     {
+//         result -= n;
+//         _VSTD::memmove(result, first, n * sizeof(Up));
+//     }
+//     return result;
+// }
+
 	template <class iterator, class value_type>
-	value_type& copy_backward(iterator first, iterator last, const value_type& val) {
+	value_type& copy_backward(iterator first, iterator last, value_type& val) {
 		for (; last != first; )
 			*--val = *--last;
 		return val;

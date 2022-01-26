@@ -2,7 +2,7 @@
 #define ITERATOR_HPP
 
 # include <iostream>
-# include <iterator>
+// # include <iterator>
 
 namespace ft {
 
@@ -11,6 +11,16 @@ struct output_iterator_tag {};
 struct forward_iterator_tag       : public input_iterator_tag         {};
 struct bidirectional_iterator_tag : public forward_iterator_tag       {};
 struct random_access_iterator_tag : public bidirectional_iterator_tag {};
+
+template<class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
+struct iterator
+{
+    typedef T         								value_type;
+    typedef Distance  								difference_type;
+    typedef Pointer   								pointer;
+    typedef Reference 								reference;
+    typedef Category  								iterator_category;
+};
 
 template<class Iterator>
 struct iterator_traits
@@ -42,15 +52,6 @@ struct iterator_traits<const T*>
     typedef random_access_iterator_tag				iterator_category;
 };
 
-template<class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
-struct iterator
-{
-    typedef T         								value_type;
-    typedef Distance  								difference_type;
-    typedef Pointer   								pointer;
-    typedef Reference 								reference;
-    typedef Category  								iterator_category;
-};
 
 }
 

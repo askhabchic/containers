@@ -10,8 +10,6 @@
 #include "utils.hpp"
 #include <iostream>
 
-#define ENABLE_IF_IS_INTEGRAL(value_type) \
- typename enable_if<is_integral< value_type >::value, bool>::type
 
 namespace ft {
 	template <class T, class alloc = std::allocator<T> > // generic template
@@ -20,15 +18,15 @@ namespace ft {
 		typedef T														value_type;
 		typedef alloc													allocator_type;
 		typedef size_t													size_type;
-		typedef typename allocator_type::reference 						reference;
-		typedef typename allocator_type::const_reference 				const_reference;
-		typedef typename allocator_type::pointer 						pointer;
-		typedef typename allocator_type::const_pointer 					const_pointer;
-		typedef typename ft::iterator_v<T>::iterator					iterator;        			
-		typedef typename ft::iterator_v<const T>::iterator				const_iterator;  			
-		typedef typename ft::reverse_iterator<iterator>					reverse_iterator;
-		typedef typename ft::reverse_iterator<const_iterator>			const_reverse_iterator;
-		typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
+		typedef value_type&						 						reference;
+		typedef const value_type&						 				const_reference;
+		typedef value_type*						 						pointer;
+		typedef const value_type*					 					const_pointer;
+		typedef ft::iterator_v<T*>										iterator;        			
+		typedef ft::iterator_v<const T*>								const_iterator;  			
+		typedef ft::reverse_iterator<iterator>							reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
+		typedef ptrdiff_t												difference_type;
 
 
 		// Construstors:	
@@ -71,10 +69,10 @@ namespace ft {
 		}
 
 		//iterators
-		iterator 					begin()			{ return _begin; };
-		const_iterator 				begin() const	{ return _begin ; };
-		iterator 					end()			{ return _end;};
-		const_iterator 				end() const		{ return _end; };
+		iterator 					begin()			{ return iterator(_begin); };
+		const_iterator 				begin() const	{ return iterator(_begin); };
+		iterator 					end()			{ return iterator(_end); };
+		const_iterator 				end() const		{ return iterator(_end); };
 		reverse_iterator 			rbegin()		{ return reverse_iterator(end()); };
 		const_reverse_iterator 		rbegin() const	{ return const_reverse_iterator(end()); };
 		reverse_iterator 			rend()			{ return reverse_iterator(begin()); };
@@ -95,11 +93,10 @@ namespace ft {
 		}
 
 		iterator	insert (iterator position, const value_type& val) {
-			size_type S = size() == 0 ? 0 : position - begin();
+			size_type S = size() == 0 ? 0 : distance(begin(),  position);
 			insert(position, static_cast<size_type>(1), val);
 			return begin() + S;
 		}
-
 
 		void		insert (iterator position, size_type n, const value_type& val) {
 			value_type tmp = val;
@@ -130,25 +127,22 @@ namespace ft {
 				pointer pos_n = position.base() + n;
 				copy(position, end(), pos_n);
 				try	{
-					fill(_end, n - (end() - position), tmp); }
+					fill(_end, n - (distance(position, end())), tmp); }
 				catch(const std::bad_alloc& ba)	{
 					for ( ; pos_n != _end + n; ++pos_n)
 						_alloc.destroy(pos_n);
 					std::cerr << "bad_alloc caught: " << ba.what() << '\n';
 				}
 				_end += n;
-				fill_st(position, end() - n, tmp);
+				fill_st(position, end() - n, val);
 			}
 			else {
 				iterator tmp = end();
 				_end = copy(tmp - n, tmp, _end);
 				copy_backward(position, tmp - n, tmp);
-				fill_st(position, position + n, tmp);
+				fill_st(position, position + n, val);
 			}
 		}
-
-
-
 
 		template <class InputIterator>
 		void		insert (iterator position, ENABLE_IF_IS_INTEGRAL(InputIterator) first, InputIterator last) {
@@ -157,11 +151,6 @@ namespace ft {
 					insert(position, *it);
 			}
 		}
-
-
-
-
-
 
 		void 		push_back (const value_type& val) {
 			insert(end(), val);
@@ -173,11 +162,11 @@ namespace ft {
 			return erase(position, position + 1);
 		}
 		iterator 	erase (iterator first, iterator last) {
-			if (first <= last)
+			if (first < last)
 				throw std::out_of_range("vector<T>::erase: out of range error");
 			if (first != last) {
 				pointer ptr = copy(last, end(), first.base());
-				for (; ptr != last; ++ptr)
+				for (; ptr != &(*last); ++ptr)
 					_alloc.destroy(ptr);
 				_end = ptr;
 			}
