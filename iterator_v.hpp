@@ -36,18 +36,18 @@ namespace ft {
 		}
 		~iterator_v() 															{};
 		
-		reference 	operator*() const 											{ return _it; };
-		pointer 	operator->() const 											{ return *_it; };
-		iterator_v&	operator++() 										 { ++_it; return *this; };
-		iterator_v 	operator++(int) 			   { iterator_v tmp = _it; ++_it; return tmp; };
-		iterator_v&	operator--() 										 { --_it; return *this; };
-		iterator_v 	operator--(int)				   { iterator_v tmp = _it; --_it; return tmp; };
-		iterator_v 	operator+ (difference_type n) const	{ iterator_v tmp = *this; return tmp + n; };
-		iterator_v& operator+=(difference_type n)					  { _it += n; return *this; };
-		iterator_v 	operator- (difference_type n) const							{ return *this + (-n); };
-		iterator_v&	operator-=(difference_type n) 								{ return *this += -n; };
-		reference 	operator[](difference_type n) const 						{ return *(*_it + n); };
-		pointer		base() const												{ return _it; };
+		reference 	operator*() const 													  { return *_it; };
+		pointer 	operator->() const 													  { return &(*_it); };
+		iterator_v&	operator++() 												   { ++_it; return *this; };
+		iterator_v 	operator++(int) 					     { iterator_v tmp = _it; ++_it; return tmp; };
+		iterator_v&	operator--() 												   { --_it; return *this; };
+		iterator_v 	operator--(int)				   			 { iterator_v tmp = _it; --_it; return tmp; };
+		iterator_v 	operator+ (difference_type n) const	{ iterator_v tmp = *this; tmp += n; return tmp; };
+		iterator_v& operator+=(difference_type n)							    { _it += n; return *this; };
+		iterator_v 	operator- (difference_type n) const									  { return *this + (-n); };
+		iterator_v&	operator-=(difference_type n) 										  { return *this += -n; };
+		reference 	operator[](difference_type n) const 								  { return *(*_it + n); };
+		pointer		base() const														  { return _it; };
 
 		bool operator== (const iterator_v& rhs) {
 			return _it == rhs._it;

@@ -48,52 +48,56 @@ struct Buffer
 // 	iterator begin() { return this->c.begin(); }
 // 	iterator end() { return this->c.end(); }
 // };
-template <T>
-class it {
-	operator ++ ()
-	T *i;
-};
+// template <T>
+// class it {
+// 	operator ++ ()
+// 	T *i;
+// };
 
-class rev_it {
+// class rev_it {
 
-	operator ++(){
-		i--;
-	}
-	it i;
-};
+// 	operator ++(){
+// 		i--;
+// 	}
+// 	it i;
+// };
 
 int main(int argc, char** argv) {
 	std::vector<int> vec;
 	std::vector<int> v(vec);
 	vec.push_back(1);
 	vec.push_back(10);
-	vec.push_back(1);
-	vec.push_back(11);
-	vec.push_back(1);
-	vec.push_back(13);
-	vec.push_back(21);
-	std::vector<int>::iterator it = vec.begin();
-	std::vector<int>::iterator ite = vec.end();
-	std::vector<int>::allocator_type alloc;
-	std::cout << "\nsize - " << vec.size() << "\n";
-	std::cout << "capacity - " << vec.capacity() << "\n";
-	it = vec.begin();
-	ite = vec.end();
-	std::cout << "begin = " << *it << "\n";
-	std::cout << "end = " << *(ite - 1) << "\n";
-	for ( ; it != ite; ++it) {
-		std::cout << *it << " ";
-	}
-	vec.insert(vec.begin() + 2, 11, 99);
-	std::cout << "\nsize - " << vec.size() << "\n";
-	std::cout << "capacity - " << vec.capacity() << "\n";
-	it = vec.begin();
-	ite = vec.end();
-	std::cout << "begin = " << *it << "\n";
-	std::cout << "end = " << *(ite - 1) << "\n";
-	for ( ; it != ite; ++it) {
-		std::cout << *it << " ";
-	}
+	std::cout << "front() - " << vec.front() << "\n";
+	std::cout << "back() - " << vec.back() << "\n";
+	std::cout << "begin() - " << *vec.begin() << "\n";
+	std::cout << "end() - " << *vec.end() << "\n";
+	// vec.push_back(1);
+	// vec.push_back(11);
+	// vec.push_back(1);
+	// vec.push_back(13);
+	// vec.push_back(21);
+	// std::vector<int>::iterator it = vec.begin();
+	// std::vector<int>::iterator ite = vec.end();
+	// std::vector<int>::allocator_type alloc;
+	// std::cout << "\nsize - " << vec.size() << "\n";
+	// std::cout << "capacity - " << vec.capacity() << "\n";
+	// it = vec.begin();
+	// ite = vec.end();
+	// std::cout << "begin = " << *it << "\n";
+	// std::cout << "end = " << *(ite - 1) << "\n";
+	// for ( ; it != ite; ++it) {
+	// 	std::cout << *it << " ";
+	// }
+	// vec.insert(vec.begin() + 2, 11, 99);
+	// std::cout << "\nsize - " << vec.size() << "\n";
+	// std::cout << "capacity - " << vec.capacity() << "\n";
+	// it = vec.begin();
+	// ite = vec.end();
+	// std::cout << "begin = " << *it << "\n";
+	// std::cout << "end = " << *(ite - 1) << "\n";
+	// for ( ; it != ite; ++it) {
+	// 	std::cout << *it << " ";
+	// }
 	// const std::string str = "test";
 	// std::vector<std::string> vec_string(str);
 	// std::vector<int>::allocator_type alloc_v = v.get_allocator();

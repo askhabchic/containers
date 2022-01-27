@@ -64,7 +64,7 @@ namespace ft {
 		}
 		//(destructor)
 		~vector() {
-			if (_begin != 0 && _end != 0)
+			if (_begin != 0) // && _end != 0)
 				destroy_dealloc(_begin, _end, capacity());
 		}
 
@@ -80,7 +80,8 @@ namespace ft {
 
 		//Modifiers:
 		template <class InputIterator>
-  		void 		assign (ENABLE_IF_IS_INTEGRAL(InputIterator) first, InputIterator last) { //range
+		ENABLE_IF_IS_INTEGRAL(InputIterator)
+  		assign (InputIterator first, InputIterator last) { //range
 			if (first > last)
 		  		throw std::range_error("vector<T>::assign: range error");
 			erase(begin(), end());
@@ -100,11 +101,13 @@ namespace ft {
 
 		void		insert (iterator position, size_type n, const value_type& val) {
 			value_type tmp = val;
+			size_type s = size(); 
+			size_type cap = capacity();
 			if (!n)
 				return ;
-			else if (n > max_size() - size())
+			else if (n > max_size() - s)
 				throw std::length_error("vector<T> length error");
-			else if (size() + n > capacity()) {
+			else if (s + n > cap) {
 				pointer ptr = _alloc.allocate(capacity_alloc(n));
 				pointer tmp_ptr;
 				try	{
@@ -116,12 +119,9 @@ namespace ft {
 					destroy_dealloc(ptr, tmp_ptr, capacity_alloc(n));
 					std::cerr << "bad_alloc caught: " << ba.what() << '\n';
 				}
-				if (_begin) {
+				if (_begin)
 					destroy_dealloc(_begin, _end, static_cast<size_type>(_end - _begin));
-					_begin = ptr;
-					_end = _begin + size() + n;
-					_cap_end = _begin + capacity_alloc(n);
-				}
+				initBegEndCap(ptr, n + size(), capacity_alloc(n));
 			}
 			else if (distance(position, end()) < n) {
 				pointer pos_n = position.base() + n;
@@ -145,7 +145,7 @@ namespace ft {
 		}
 
 		template <class InputIterator>
-		void		insert (iterator position, ENABLE_IF_IS_INTEGRAL(InputIterator) first, InputIterator last) {
+		insert (iterator position, ENABLE_IF_IS_INTEGRAL(InputIterator) first, InputIterator last) {
 			if (first != last) {
 				for (InputIterator it = first; it != last; ++it)
 					insert(position, *it);
@@ -202,9 +202,10 @@ namespace ft {
 			else if (n > capacity()) {
 				pointer ptr = _alloc.allocate(n);
 				reallocate(begin(), end(), ptr, n);
-				_begin = ptr;
-				_end = ptr + size();
-				_cap_end = ptr + n;
+				initBegEndCap(ptr, size(), n);
+				// _begin = ptr;
+				// _end = ptr + size();
+				// _cap_end = ptr + n;
 			}
 		}
 
@@ -221,10 +222,10 @@ namespace ft {
 				throw std::out_of_range("vector<T> out of range error");
 			return *(_begin + n);
 		}
-		reference 			front() { return *_begin;	}
-		const_reference 	front() const { return *_begin;	}
-		reference 			back() { return *_end - 1;	}
-		const_reference 	back() const { return *_end - 1;	}
+		reference 			front() { return *(begin());	}
+		const_reference 	front() const { return *(begin());	}
+		reference 			back() { return *(end());	}
+		const_reference 	back() const { return *(end());	}
 
 		//Allocator:
 		allocator_type 		get_allocator() const { return _alloc; }
@@ -241,6 +242,11 @@ namespace ft {
 		// 	Distance(first, last, n);
 		// return n;	
 	// }
+		void	initBegEndCap(pointer b, size_type n, size_type s = 0) {
+			_begin = b;
+			_end = s == 0 ? b + 1 : b + s;
+			_cap_end = b + n;
+		}
 
 		template <class initer>
 		typename vector<initer>::difference_type distance (initer first, initer last) {
@@ -254,8 +260,9 @@ namespace ft {
 		}
 
 		void	destroy_dealloc(pointer first, pointer last, size_type n) {
-			for (; first != last; ++first)
-				_alloc.destroy(first);
+			pointer tmp = first;
+			for (; tmp != last; ++tmp)
+				_alloc.destroy(tmp);
 			_alloc.deallocate(first, n);
 		}
 
