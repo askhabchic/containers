@@ -6,14 +6,14 @@
 
 namespace ft {
 	template<class Iterator>
-	class reverse_iterator : public iterator_v<Iterator>	{
+	class reverse_iterator {
 	public:
 		typedef	Iterator																		iterator_type;
-		typedef typename iterator<ft::random_access_iterator_tag, Iterator>::difference_type	difference_type;
-		typedef typename iterator<ft::random_access_iterator_tag, Iterator>::value_type			value_type;
-		typedef typename iterator<ft::random_access_iterator_tag, Iterator>::pointer			pointer;
-		typedef typename iterator<ft::random_access_iterator_tag, Iterator>::reference			reference;
-		typedef typename iterator<ft::random_access_iterator_tag, Iterator>::iterator_category 	iterator_category;	
+		typedef typename ft::iterator_traits<iterator_type>::difference_type					difference_type;
+		typedef typename ft::iterator_traits<iterator_type>::value_type							value_type;
+		typedef typename ft::iterator_traits<iterator_type>::pointer							pointer;
+		typedef typename ft::iterator_traits<iterator_type>::reference							reference;
+		typedef typename ft::iterator_traits<iterator_type>::iterator_category					iterator_category;	
 		typedef reverse_iterator<Iterator>														rit;
 	
 	protected:
@@ -24,7 +24,7 @@ namespace ft {
 		~reverse_iterator();
 		explicit reverse_iterator (iterator_type it) : _it(it) {}
 		template <class Iter>
-  		reverse_iterator (const reverse_iterator<Iter>& rev_it) : _it(rev_it.base()) {}
+  		reverse_iterator (const reverse_iterator<Iter>& rev_it, typename ft::enable_if<std::is_convertible<Iter, Iterator>::value>::type* = 0) : _it(rev_it.base()) {}
 
 		iterator_type base() const														   { return _it; }
 		reference operator*() const							   { reverse_iterator tmp = _it; return *--tmp; }
@@ -38,8 +38,6 @@ namespace ft {
 		reverse_iterator operator- (difference_type n) const { reverse_iterator tmp = *this; return tmp + n; 	}
 		reverse_iterator operator+ (difference_type n) const 							   { return *this -(n); }
 		reference operator[] (difference_type n) const 									   { return *(*_it + n); }
-
-		
 	};
 
 	template <class Iterator>

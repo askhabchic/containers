@@ -32,4 +32,6 @@
 *.app
 
 test/
-.dSYM
+*.dSYM
+*.gch.tmp
+ft_containers-unit-test

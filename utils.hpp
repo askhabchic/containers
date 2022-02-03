@@ -6,10 +6,10 @@
 #include "iterator_v.hpp"
 
 #define ENABLE_IF_IS_INTEGRAL(value_type) \
- typename enable_if<is_integral< value_type >::value, bool>::type
+ typename enable_if<is_integral< value_type >::value, void>::type
 
 #define ENABLE_IF_IS_NOT_INTEGRAL(value_type) \
- typename enable_if<!is_integral< value_type >::value, bool>::type
+ typename enable_if<!is_integral< value_type >::value, void>::type
 
 namespace ft {
 
@@ -49,12 +49,20 @@ namespace ft {
 	template <>        struct is_integral<__int128_t>         : public true_type {};
 	template <>        struct is_integral<__uint128_t>        : public true_type {};
 
-	template <class T1, class T2>
-	T1 copy_st(T1 first, T1 last, const T2& val) {
-		for (; first != last; ++val, ++first)
-			*val = *first;
-		return val;
-	}
+
+		template <class Ts>
+		void    swap(Ts& a, Ts& b){
+			Ts tmp = a;
+			a = b;
+			b = tmp;
+		}
+		
+		template <class T1, class T2>
+		T1 copy_st(T1 first, T1 last, T2& val, typename ft::enable_if<std::is_convertible<T1, T1>::value>::type* = 0) {
+			for (; first != last; ++val, ++first)
+				*val = *first;
+			return val;
+		}
 
 	template <class T1, class value_type>
 	void fill_st(T1 first, T1 last, value_type& val) {
@@ -62,21 +70,10 @@ namespace ft {
 			*first = val;
 	}
 
-// template <class Tp, class Up> inline
-// typename enable_if<std::is_same<typename std::remove_const<Tp>::type, Up>::value &&
-//     std::is_trivially_copy_assignable<Up>::value, Up*>::type copy_backward(Tp* first, Tp* last, Up* result) {
-//     const size_t n = static_cast<size_t>(last - first);
-//     if (n > 0)     {
-//         result -= n;
-//         _VSTD::memmove(result, first, n * sizeof(Up));
-//     }
-//     return result;
-// }
-
 	template <class iterator, class value_type>
 	value_type& copy_backward(iterator first, iterator last, value_type& val) {
 		for (; last != first; )
-			*--val = *--last;
+			*(--val) = *(--last);
 		return val;
 	}
 
@@ -101,11 +98,16 @@ namespace ft {
 	  return (first2 != last2);
 	}
 
-
-	template<class RandomIter, class D>
-	void Distance(RandomIter first, RandomIter last, D& n) {
-		n += last - first;
+	template <class RanIt, class D> inline
+	void advance (RanIt &I, D N) {
+		I += N;
 	}
+
+	// template<class RandomIter, class D>
+	// ENABLE_IF_IS_NOT_INTEGRAL(RandomIter)
+	// Distance(RandomIter first, RandomIter last, D& n) {
+	// 	n += last - first;
+	// }
 
 }
 

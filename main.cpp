@@ -63,10 +63,20 @@ struct Buffer
 // };
 
 int main(int argc, char** argv) {
-	std::vector<int> vec;
-	std::vector<int> v(vec);
-	vec.push_back(1);
-	vec.push_back(10);
+	// std::vector<int> vec;
+	// std::vector<int> v(vec);
+	// vec.push_back(1);
+	// vec.push_back(10);
+	std::vector<int> vec_int;
+	// vector<int> vec_int_with_size(5);
+	// vector<char> vec_char(5, 'a');
+	// vector<A> vec_class;
+	vec_int.push_back(5);
+	// vec_int.push_back(4);
+	// vec_int.push_back(3);
+	// vec_int.push_back(2);
+	// vec_int.push_back(1);
+	std::vector<int> vec(vec_int);
 	std::cout << "front() - " << vec.front() << "\n";
 	std::cout << "back() - " << vec.back() << "\n";
 	std::cout << "begin() - " << *vec.begin() << "\n";
