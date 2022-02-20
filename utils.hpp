@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "iterator.hpp"
-#include "iterator_v.hpp"
+// #include "iterator_v.hpp"
 
 #define ENABLE_IF_IS_INTEGRAL(value_type) \
  typename enable_if<is_integral< value_type >::value, void>::type
@@ -49,20 +49,13 @@ namespace ft {
 	template <>        struct is_integral<__int128_t>         : public true_type {};
 	template <>        struct is_integral<__uint128_t>        : public true_type {};
 
-
-		template <class Ts>
-		void    swap(Ts& a, Ts& b){
-			Ts tmp = a;
-			a = b;
-			b = tmp;
-		}
-		
-		template <class T1, class T2>
-		T1 copy_st(T1 first, T1 last, T2& val, typename ft::enable_if<std::is_convertible<T1, T1>::value>::type* = 0) {
-			for (; first != last; ++val, ++first)
-				*val = *first;
-			return val;
-		}
+	
+	template <class T1, class T2>
+	T1 copy_st(T1 first, T1 last, T2& val, typename ft::enable_if<std::is_convertible<T1, T1>::value>::type* = 0) {
+		for (; first != last; ++val, ++first)
+			*val = *first;
+		return val;
+	}
 
 	template <class T1, class value_type>
 	void fill_st(T1 first, T1 last, value_type& val) {
@@ -78,13 +71,14 @@ namespace ft {
 	}
 
 	template <class InputIterator1, class InputIterator2>
-	bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2)
+  	bool equal ( InputIterator1 first1, InputIterator1 last1, InputIterator2 first2 )
 	{
-	    while (first1 != last1) {
-			if (*first1++ != *first2)
-				return false;
-		}
-		return true;
+  		while (first1!=last1) {
+    		if (!(*first1 == *first2))
+      			return false;
+    		++first1; ++first2;
+  		}
+  		return true;
 	}
 
 	template <class InputIterator1, class InputIterator2>
@@ -103,12 +97,17 @@ namespace ft {
 		I += N;
 	}
 
-	// template<class RandomIter, class D>
-	// ENABLE_IF_IS_NOT_INTEGRAL(RandomIter)
-	// Distance(RandomIter first, RandomIter last, D& n) {
-	// 	n += last - first;
+	// template <class Ts>
+	// void    swap(Ts& a, Ts& b){
+	// 	std::swap(a, b);
 	// }
-
 }
+
+// namespace std {
+// 	template <class Ts>
+// 	void    swap(vector<Ts>& a, vector<Ts>& b){
+// 		a.swap(b);
+// 	}
+// }
 
 #endif

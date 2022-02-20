@@ -1,10 +1,11 @@
 NAME = test
 
+#SRC = stack_main.cpp
 SRC = main_test_vector.cpp
 
 HEADER = $(wildcard *.hpp)
 
-#FLAGS = -Wall -Werror -Wextra
+FLAGS = -Wall -Werror -Wextra -std=c++98
 
 OBJ = $(SRC:.cpp=.o)
 
@@ -24,5 +25,8 @@ run:
 
 rerun: re 
 	@./$(NAME)
+
+leak:
+	MallocStackLogging=1 MallocScribble=1 leaks -atExit -- ./$(NAME)
 
 .PHONY: clean fclean re run rerun

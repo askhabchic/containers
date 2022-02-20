@@ -20,7 +20,7 @@ namespace ft {
 	
 	public:
 		// Member functions:
-		iterator_v() : _it(NULL) {};
+		iterator_v() : _it(NULL) {}
 		explicit iterator_v (iterator_type it) : _it(it) {}
 		template <class Vi> iterator_v(const iterator_v<Vi> & vit, typename ft::enable_if<std::is_convertible<Vi, iterator_type>::value>::type* = 0) : _it(vit.base()) {};
 		template <class Vi>	iterator_v& operator=(const iterator_v<Vi> & vit) { _it = vit.base(); return *this;	}
