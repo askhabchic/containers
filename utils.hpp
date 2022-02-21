@@ -99,7 +99,9 @@ namespace ft {
 
 	// template <class Ts>
 	// void    swap(Ts& a, Ts& b){
-	// 	std::swap(a, b);
+	// 	Ts tmp = a;
+	// 	a = b;
+	// 	b = tmp;
 	// }
 }
 

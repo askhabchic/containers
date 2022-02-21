@@ -161,7 +161,7 @@ int main() {
 	vector<int> vector1;
     std::vector<int> v;
 	// vector1.assign(1000, 1);
-    vector<int> tmp;
+    // vector<int> tmp;
     // tmp.assign(2600 * _ratio, 1);
     // vector1.assign(2200 * _ratio, 1);
     // vector1.insert(vector1.end() - 1400 * _ratio, tmp.begin(), tmp.end());
@@ -169,25 +169,27 @@ int main() {
     // v.push_back(vector1.size());
     // v.push_back(vector1.capacity());
 
-	vector1.assign(2600 * _ratio, 1);
-    v.push_back(*(vector1.insert(vector1.end() - 800 * _ratio, 44)));
-    v.push_back(vector1.size());
-    v.push_back(vector1.capacity());
-    std::unique_ptr<B> k2(new B(3));
-    std::unique_ptr<B> k3(new B(4));
-    std::unique_ptr<B> k4(new B(-1));
-    vector<A> vv;
-    vector<B*> v1;
 
-    v1.push_back(&(*k2));
-    v1.push_back(&(*k3));
-    v1.push_back(&(*k4));
-    // vv.insert(vv.begin(), v1.begin(), v1.end());
-    try { vv.insert(vv.begin(), v1.begin(), v1.end()); }
-    catch (...) {
-    	v.push_back(vv.size());
-    	v.push_back(vv.capacity());
-    }
+//insert(value)  leak {
+	// vector1.assign(2600 * _ratio, 1);
+    // v.push_back(*(vector1.insert(vector1.end() - 800 * _ratio, 44)));
+    // v.push_back(vector1.size());
+    // v.push_back(vector1.capacity());
+    // std::unique_ptr<B> k2(new B(3));
+    // std::unique_ptr<B> k3(new B(4));
+    // std::unique_ptr<B> k4(new B(-1));
+    // vector<A> vv;
+    // vector<B*> v1;
+    // v1.push_back(&(*k2));
+    // v1.push_back(&(*k3));
+    // v1.push_back(&(*k4));
+    // // vv.insert(vv.begin(), v1.begin(), v1.end());
+    // try { vv.insert(vv.begin(), v1.begin(), v1.end()); }
+    // catch (...) {
+    // 	v.push_back(vv.size());
+    // 	v.push_back(vv.capacity());
+    // }
+// }
 
 	// tmp.assign(2600 * _ratio, 1);
     // vector1.assign(4200 * _ratio, 1);
@@ -211,19 +213,45 @@ int main() {
     // try { vector<int> tmp5(-1, -1); }
     // catch (std::exception &e) { v.push_back(1); }
 
-    // vector1.assign(9900 * _ratio, 11);
-    // vector<int> tmp(500000, 5);
-	// vector<int> tmp2(1000000, 10);
-	// vector<int> tmp3(1500000, 15);
-	// vector<int> tmp4(3000000, 30);
+
+// swap {
+	 vector1.assign(1100 * _ratio, 11);
+     vector<int> tmp(500000, 5);
+	 vector<int> tmp2(1000000, 10);
+	 vector<int> tmp3(1500000, 15);
+	 vector<int> tmp4(3000000, 30);
+     v.push_back(vector1[2]);
+     v.push_back(vector1.size());
+     v.push_back(vector1.capacity());
+     long *adr1 = reinterpret_cast<long *>(&vector1);
+     long *adr2 = reinterpret_cast<long *>(&tmp);
+     vector1.swap(tmp);
+     if (reinterpret_cast<long *>(&vector1) == adr1 && reinterpret_cast<long *>(&tmp) == adr2)
+    	 v.push_back(1);
+     v.push_back(vector1[2]);
+     v.push_back(vector1.size());
+     v.push_back(vector1.capacity());
+     vector1.swap(tmp3);
+     v.push_back(vector1[2]);
+     v.push_back(vector1.size());
+     v.push_back(vector1.capacity());
+     std::swap(vector1, tmp2);
+     v.push_back(vector1[2]);
+     v.push_back(vector1.size());
+     v.push_back(vector1.capacity());
+     std::swap(vector1, tmp4);
+     v.push_back(vector1[2]);
+     v.push_back(vector1.size());
+     v.push_back(vector1.capacity());
+// }
+
+//resize {
     // // vector1.swap(tmp);
 	// std::cout << vector1.size() << ", cap - " << vector1.capacity() << "\n";
 	// vector1.resize(5000 * _ratio);	
 	// std::cout << vector1.size() << ", cap - " << vector1.capacity() << "\n";
 	// vector1.reserve(5000 * _ratio);
     // // // // v.push_back(vector1[2]);
-    // v.push_back(vector1.size());
-    // v.push_back(vector1.capacity());
 	// vector1.resize(7000 * _ratio);
 	// std::cout << vector1.size() << ", cap - " << vector1.capacity() << "\n";
     // v.push_back(vector1.size());
@@ -234,33 +262,8 @@ int main() {
     // v.push_back(vector1.capacity());
     // v.push_back(vector1[65]);
 	// std::cout << v.back() << "\n";
-    // // // long *adr1 = reinterpret_cast<long *>(&vector1);
-    // // // long *adr2 = reinterpret_cast<long *>(&tmp);
-    // // // vector1.swap(tmp);
-    // // // if (reinterpret_cast<long *>(&vector1) == adr1 && reinterpret_cast<long *>(&tmp) == adr2)
-    // // // 	v.push_back(1);
-    // // // v.push_back(vector1[2]);
-    // // // v.push_back(vector1.size());
-    // // // v.push_back(vector1.capacity());
-	// v.push_back(*(vector1.begin()));
-	// v.push_back(*(vector1.begin() + 1));
-	// v.push_back(*(vector1.rbegin()));
-	// v.push_back(*(vector1.rbegin() + 1));
-	// v.push_back(*(vector1.rend()));
-	// v.push_back(*(vector1.rend() - 1));
-	// v.push_back(*(vector1.rend() - 2));
-    // // vector1.swap(tmp3);
-    // // v.push_back(vector1[2]);
-    // // v.push_back(vector1.size());
-    // // v.push_back(vector1.capacity());
-    // // std::swap(vector1, tmp2);
-    // // v.push_back(vector1[2]);
-    // // v.push_back(vector1.size());
-    // // v.push_back(vector1.capacity());
-    // // std::swap(vector1, tmp4);
-    // // v.push_back(vector1[2]);
-    // // v.push_back(vector1.size());
-    // // v.push_back(vector1.capacity());
+// }
+
 	for (std::vector<int>::iterator it = v.begin(); it != v.end(); ++it)
 		std::cout << *it << " ";
 	std::cout << "\n";
@@ -268,9 +271,9 @@ int main() {
 
 
 
-	// std::cout << "std::vector\n";
-	// std::vector<int> vector2;
-    // std::vector<int> v2;
+	std::cout << "std::vector\n";
+	std::vector<int> vector2;
+    std::vector<int> v2;
 	// vector2.assign(1000, 1);
     // std::vector<int> tmp1;
     // tmp1.assign(2600 * _ratio, 1);
@@ -279,29 +282,45 @@ int main() {
     // v2.push_back(vector2[3]);
     // v2.push_back(vector2.size());
     // v2.push_back(vector2.capacity());
-
 	// vector2.assign(1000, 1);
-    // vector2.assign(9900 * _ratio, 11);
-    // std::vector<int> tmp_std(500000, 5);
-	// std::vector<int> tmp2_std(1000000, 10);
-	// std::vector<int> tmp3_std(1500000, 15);
-	// std::vector<int> tmp4_std(3000000, 30);
-    // // v2.push_back(vector2[2]);
-    // // v2.push_back(vector2.size());
-    // // v2.push_back(vector2.capacity());
-    // // long *adr3 = reinterpret_cast<long *>(&vector2);
-    // // long *adr4 = reinterpret_cast<long *>(&tmp_std);
-    // vector2.swap(tmp_std);
-	// std::cout << vector2.size() << ", cap - " << vector2.capacity() << "\n";
-    // // if (reinterpret_cast<long *>(&vector2) == adr3 && reinterpret_cast<long *>(&tmp_std) == adr4)
-    // // 	v2.push_back(1);
-    // // v2.push_back(vector2[2]);
+
+// swap {
+     vector2.assign(1100 * _ratio, 11);
+     std::vector<int> tmp_std(500000, 5);
+	 std::vector<int> tmp2_std(1000000, 10);
+	 std::vector<int> tmp3_std(1500000, 15);
+	 std::vector<int> tmp4_std(3000000, 30);
+     v2.push_back(vector2[2]);
+     v2.push_back(vector2.size());
+     v2.push_back(vector2.capacity());
+     long *adr3 = reinterpret_cast<long *>(&vector2);
+     long *adr4 = reinterpret_cast<long *>(&tmp_std);
+     vector2.swap(tmp_std);
+	 std::cout << vector2.size() << ", cap - " << vector2.capacity() << "\n";
+     if (reinterpret_cast<long *>(&vector2) == adr3 && reinterpret_cast<long *>(&tmp_std) == adr4)
+    	 v2.push_back(1);
+     v2.push_back(vector2[2]);
+     v2.push_back(vector2.size());
+     v2.push_back(vector2.capacity());
+     vector2.swap(tmp3_std);
+     v2.push_back(vector2[2]);
+     v2.push_back(vector2.size());
+     v2.push_back(vector2.capacity());
+     std::swap(vector2, tmp2_std);
+     v2.push_back(vector2[2]);
+     v2.push_back(vector2.size());
+     v2.push_back(vector2.capacity());
+     std::swap(vector2, tmp4_std);
+     v2.push_back(vector2[2]);
+     v2.push_back(vector2.size());
+     v2.push_back(vector2.capacity());
+// }
+
+// resize {
 	// vector2.resize(5000 * _ratio);
 	// std::cout << vector2.size() << ", cap - " << vector2.capacity() << "\n";
 	// vector2.reserve(5000 * _ratio);
     // // // // v.push_back(vector1[2]);
-    // v2.push_back(vector2.size());
-    // v2.push_back(vector2.capacity());
 	// vector2.resize(7000 * _ratio);
 	// std::cout << vector2.size() << ", cap - " << vector2.capacity() << "\n";
     // v2.push_back(vector2.size());
@@ -321,20 +340,9 @@ int main() {
 	// v2.push_back(*(vector2.rend()));
 	// v2.push_back(*(vector2.rend() - 1));
 	// v2.push_back(*(vector2.rend() - 2));
-    // // vector2.swap(tmp3_std);
-    // // v2.push_back(vector2[2]);
-    // // v2.push_back(vector2.size());
-    // // v2.push_back(vector2.capacity());
-    // // std::swap(vector2, tmp2_std);
-    // // v2.push_back(vector2[2]);
-    // // v2.push_back(vector2.size());
-    // // v2.push_back(vector2.capacity());
-    // // std::swap(vector2, tmp4_std);
-    // // v2.push_back(vector2[2]);
-    // // v2.push_back(vector2.size());
-    // // v2.push_back(vector2.capacity());
-	// for (std::vector<int>::iterator it2 = v2.begin(); it2 != v2.end(); ++it2)
-	// 	std::cout << *it2 << " ";
-	// std::cout << "\n";
+// }
+	for (std::vector<int>::iterator it2 = v2.begin(); it2 != v2.end(); ++it2)
+		std::cout << *it2 << " ";
+	std::cout << "\n";
 	return 0;
 }

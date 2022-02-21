@@ -28,6 +28,13 @@ namespace ft {
 		typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
 		typedef ptrdiff_t												difference_type;
 
+		// protected:
+			// allocator_type		_alloc;
+			// pointer				_begin;
+			// pointer				_end;
+			// pointer				_cap_end;
+			// size_type			_size;
+
 		//(constructor)
 		// explicit vector (const allocator_type& alloc = allocator_type()); //empty container constructor (default constructor)
 		// explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()); //fill constructor
@@ -138,11 +145,13 @@ namespace ft {
 		} //copy constructor
 
 		//operator=
-		vector& 					operator= (const vector& x) {			//leaks
+		vector& 					operator= (const vector& x) {
+            // if (_begin)
+            //     destroy_dealloc(_begin, _end, static_cast<size_type>(_end - _begin));
 			_begin = _end = _cap_end = NULL;
 			_size = 0;
 			// _alloc = x._alloc;
-			assign(x.begin(), x.end());
+			assign(x.begin(), x.end()); //leaks
 			return *this;
 		}
 
@@ -169,7 +178,7 @@ namespace ft {
 			if (first > last)
 		  		throw std::range_error("vector<T>::assign: range error");
 			clear();
-			insert(begin(), first, last);
+			insert(begin(), first, last); //leak
 		}
 
 		void 		assign (size_type n, const value_type& val) { //fill
@@ -247,7 +256,7 @@ namespace ft {
 				throw std::length_error("vector<T> length error");
 			else if (size() + dif > cap) {
 				cap = _size + static_cast<unsigned long>(dif) > capacity() * 2 ? _size + dif : capacity() * 2;
-				pointer ptr = _alloc.allocate(cap);
+				pointer ptr = _alloc.allocate(cap);  //leak
 				pointer tmp_ptr;
 				try	{
 					tmp_ptr = std::uninitialized_copy(begin(), position, ptr);
@@ -539,6 +548,7 @@ namespace ft {
 	template <class T, class Alloc>
 	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) { x.swap(y); }
 }
+
 
 // namespace std {
 // 	template <class T, class Alloc>
