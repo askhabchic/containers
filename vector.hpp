@@ -1,15 +1,9 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
-#include <memory>
-// #include <iterator>
 #include <stdexcept>
-// #include "iterator_.hpp"
 #include "iterator_v.hpp"
-// #include "reverse_iterator.hpp"
 #include "utils.hpp"
-#include <iostream>
-
 
 namespace ft {
 	template <class T, class alloc = std::allocator<T> > // generic template
@@ -173,7 +167,7 @@ namespace ft {
 			if (first > last)
 		  		throw std::range_error("vector<T>::assign: range error");
 			clear();
-			insert(begin(), first, last); //leak
+			insert(begin(), first, last);
 		}
 
 		void 		assign (size_type n, const value_type& val) { //fill
@@ -252,7 +246,7 @@ namespace ft {
 				throw std::length_error("vector<T> length error");
 			else if (size() + dif > cap) {
 				cap = _size + static_cast<unsigned long>(dif) > capacity() * 2 ? _size + dif : capacity() * 2;
-				pointer ptr = _alloc.allocate(cap);  //leak
+				pointer ptr = _alloc.allocate(cap);
 				difference_type range1 = distance(first, last);
 				difference_type range2 = distance(position, end());
 				try	{
@@ -267,7 +261,6 @@ namespace ft {
 				}
 				if (_begin)
 					destroy_dealloc(_begin, _end, _end - _begin);
-				// std::cout << _begin << "\n";
 				_begin = ptr;
 				_size += dif;
 				_end = ptr + size();
@@ -565,9 +558,6 @@ namespace ft {
   	bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) { 
 		return !(lhs < rhs);
 	}
-
-	// template <class T, class Alloc>
-	// void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) { x.swap(y); }
 }
 
 
