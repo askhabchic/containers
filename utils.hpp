@@ -2,8 +2,8 @@
 #define UTILS_HPP
 
 #include <iostream>
-#include "iterator.hpp"
-// #include "iterator_v.hpp"
+#include <memory>
+#include "iterator_traits.hpp"
 
 #define ENABLE_IF_IS_INTEGRAL(value_type) \
  typename enable_if<is_integral< value_type >::value, void>::type
@@ -49,6 +49,10 @@ namespace ft {
 	template <>        struct is_integral<__int128_t>         : public true_type {};
 	template <>        struct is_integral<__uint128_t>        : public true_type {};
 
+
+	template <class T> struct less : std::binary_function <T,T,bool> {
+  		bool operator() (const T& x, const T& y) const {return x<y;}
+	};
 	
 	template <class T1, class T2>
 	T1 copy_st(T1 first, T1 last, T2& val, typename ft::enable_if<std::is_convertible<T1, T1>::value>::type* = 0) {
@@ -97,19 +101,85 @@ namespace ft {
 		I += N;
 	}
 
-	// template <class Ts>
-	// void    swap(Ts& a, Ts& b){
-	// 	Ts tmp = a;
-	// 	a = b;
-	// 	b = tmp;
-	// }
-}
+	template <class T1, class T2>
+    struct pair        {
+        public :
+            typedef T1 first_type;
+            typedef T2 second_type;
 
-// namespace std {
-// 	template <class Ts>
-// 	void    swap(vector<Ts>& a, vector<Ts>& b){
-// 		a.swap(b);
-// 	}
-// }
+            first_type first;
+            second_type second;
+
+            pair() : first(), second() {}
+
+            template<class U, class V>
+            pair (const pair<U, V>& pr) : first(pr.first), second(pr.second) {}
+
+            pair (const first_type& a, const second_type& b) : first(a), second(b) {}
+
+            pair& operator= (const pair& pr) { 
+				if (*this == pr)
+                    return (*this);
+                this->first = pr.first;
+                this->second = pr.second;
+                return (*this);
+            }
+    };
+    
+    template <class T1, class T2>
+        bool operator== (const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs)        {
+            return (lhs.first == rhs.first && lhs.second == rhs.second);
+        }
+
+    template <class T1, class T2>
+        bool operator!= (const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs)        {
+            return !(lhs == rhs);
+        }
+    
+    template <class T1, class T2>
+        bool operator<  (const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs)        {
+            return (lhs.first < rhs.first || (!(rhs.first < lhs.first) && lhs.second < rhs.second));
+        }
+
+    template <class T1, class T2>
+        bool operator<= (const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs)        {
+            return !(rhs < lhs);
+        }
+
+    template <class T1, class T2>
+        bool operator>  (const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs)        {
+            return (rhs < lhs);
+        }
+
+    template <class T1, class T2>
+        bool operator>= (const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs)        {
+            return !(lhs < rhs);
+        }
+    
+    template <class T1, class T2>
+        ft::pair<T1,T2> make_pair(T1 x, T2 y)        {
+            return (ft::pair<T1, T2>(x, y));
+        }
+	
+
+	template <class K, class Tp>
+	struct _value_type {
+		typedef K									key_type;
+		typedef Tp									mapped_type;
+		typedef pair<const key_type, mapped_type>	value_type;	
+
+	private:
+		value_type	c;
+
+		_value_type();
+		_value_type(value_type const &);
+		_value_type& operator=(value_type const &);
+		~_value_type();
+
+	public:
+		value_type& get_value() { return c; }
+		const value_type& get_value() const { return c; }
+	};
+}
 
 #endif

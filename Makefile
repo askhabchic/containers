@@ -1,7 +1,7 @@
 NAME = test
 
-#SRC = stack_main.cpp
-SRC = main_test_vector.cpp
+SRC = main_map.cpp
+# SRC = main_test_vector.cpp
 
 HEADER = $(wildcard *.hpp)
 

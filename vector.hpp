@@ -4,9 +4,9 @@
 #include <memory>
 // #include <iterator>
 #include <stdexcept>
-#include "iterator.hpp"
+// #include "iterator_.hpp"
 #include "iterator_v.hpp"
-#include "reverse_iterator.hpp"
+// #include "reverse_iterator.hpp"
 #include "utils.hpp"
 #include <iostream>
 
@@ -43,10 +43,10 @@ namespace ft {
 		// vector (const vector& x); //copy constructor
 
 		//(destructor)
-		// virtual 					~vector();
+		// virtual 						~vector();
 
 		//operator=
-		// vector& 					operator= (const vector& x);
+		// vector& 						operator= (const vector& x);
 
 		//iterators
 		// iterator 					begin();
@@ -133,24 +133,19 @@ namespace ft {
 			difference_type dif = distance(first, last);
 			if (dif > 0) {
 				if (!(_begin = _alloc.allocate(dif)))
-				throw std::bad_alloc();
+					throw std::bad_alloc();
 				_end = _cap_end = _begin + dif;
 				_size = dif;
 				assign(first, last);
 			}
 		} //range constructor
 		
-		vector (const vector& x) : _alloc(x._alloc) {
+		vector (const vector& x) : _alloc(x._alloc), _begin(NULL), _end(NULL), _cap_end(NULL), _size(0) {	
 			*this = x;
 		} //copy constructor
 
 		//operator=
 		vector& 					operator= (const vector& x) {
-            // if (_begin)
-            //     destroy_dealloc(_begin, _end, static_cast<size_type>(_end - _begin));
-			_begin = _end = _cap_end = NULL;
-			_size = 0;
-			// _alloc = x._alloc;
 			assign(x.begin(), x.end()); //leaks
 			return *this;
 		}
@@ -206,9 +201,9 @@ namespace ft {
 				pointer ptr = _alloc.allocate(cap);
 				pointer tmp_ptr;
 				try	{
-					tmp_ptr = std::uninitialized_copy(begin(), position, ptr);
+					tmp_ptr = uninitialized_copy(begin(), position, ptr);
 					tmp_ptr = fill(tmp_ptr, n, tmp);
-					std::uninitialized_copy(position, end(), tmp_ptr);
+					uninitialized_copy(position, end(), tmp_ptr);
 				}
 				catch(const std::bad_alloc& ba)	{
 					destroy_dealloc(ptr, tmp_ptr, cap);
@@ -223,7 +218,7 @@ namespace ft {
 			}
 			else if (size_type(distance(position, end())) < n) {
 				pointer pos_n = position.base() + n;
-				std::uninitialized_copy(position, end(), pos_n);
+				uninitialized_copy(position, end(), pos_n);
 				try	{
 					fill(_end, n - (distance(position, end())), tmp); }
 				catch(const std::bad_alloc& ba)	{
@@ -237,8 +232,8 @@ namespace ft {
 			}
 			else {
 				iterator tmp = end();
-				_end = std::uninitialized_copy(tmp - n, tmp, _end);
-				std::copy_backward(position, tmp - n, tmp);
+				_end = uninitialized_copy(tmp - n, tmp, _end);
+				ft::copy_backward(position, tmp - n, tmp);
 				fill_st(position, position + n, val);
 				_size += n;
 			}
@@ -251,25 +246,28 @@ namespace ft {
 				throw std::logic_error("vector: logic error");
 			difference_type dif = distance(first, last);
 			size_type cap = capacity();
-			if (!dif) return ;
+			if (!dif) {
+				return ; }
 			else if (size_t(dif) > max_size() - size())
 				throw std::length_error("vector<T> length error");
 			else if (size() + dif > cap) {
 				cap = _size + static_cast<unsigned long>(dif) > capacity() * 2 ? _size + dif : capacity() * 2;
 				pointer ptr = _alloc.allocate(cap);  //leak
-				pointer tmp_ptr;
+				difference_type range1 = distance(first, last);
+				difference_type range2 = distance(position, end());
 				try	{
-					tmp_ptr = std::uninitialized_copy(begin(), position, ptr);
-					tmp_ptr = std::uninitialized_copy(first, last, tmp_ptr);
-					std::uninitialized_copy(position, end(), tmp_ptr);
+					uninitialized_copy(begin(), position, ptr);
+					uninitialized_copy(first, last, ptr + distance(begin(),position));
+					uninitialized_copy(position, end(), ptr + distance(first, last)); 
 				}
 				catch(const std::bad_alloc& ba) {
-					destroy_dealloc(ptr, tmp_ptr, cap);
+					destroy_dealloc(ptr, ptr + cap, cap);
 					std::cerr << "bad_alloc caught: " << ba.what() << '\n';
 					throw ;
 				}
 				if (_begin)
 					destroy_dealloc(_begin, _end, _end - _begin);
+				// std::cout << _begin << "\n";
 				_begin = ptr;
 				_size += dif;
 				_end = ptr + size();
@@ -277,11 +275,11 @@ namespace ft {
 			}
 			else if (distance(position, end()) < dif) {
 				pointer pos = position.base() + dif;
-				std::uninitialized_copy(position, end(), pos);
+				uninitialized_copy(position, end(), pos);
 				InputIterator mid = first;
 				ft::advance(mid, distance(position, end()));
 				try {
-					std::uninitialized_copy(mid, last, _end);
+					uninitialized_copy(mid, last, _end);
 				}
 				catch(const std::bad_alloc& ba) {
 					for ( ; pos != _end + dif; ++pos)
@@ -295,8 +293,8 @@ namespace ft {
 			}
 			else if (0 < dif) {
 				iterator tmp = end();
-				_end = std::uninitialized_copy(tmp - dif, tmp, _end);
-				std::copy_backward(position, tmp - dif, tmp);
+				_end = uninitialized_copy(tmp - dif, tmp, _end);
+				ft::copy_backward(position, tmp - dif, tmp);
 				std::copy(first, last, position);
 				_size += dif;
 			}
@@ -484,10 +482,19 @@ namespace ft {
 				destroy_dealloc(_begin, _end, diff);
 		}
 
+		template<class InputIterator, class ForwardIterator>
+		  ForwardIterator uninitialized_copy ( InputIterator first, InputIterator last,
+		                                       ForwardIterator result )	{
+		  for (; first!=last; ++result, ++first)
+		    new (static_cast<void*>(&*result))
+		      typename iterator_traits<ForwardIterator>::value_type(*first);
+		  return result;
+		}
+
 		pointer copy(iterator First, iterator Last, pointer P) {
 			pointer tmp = P;
 			try	{
-				for (; First != Last; ++First, ++P)
+				for (; First != Last; First++, P++)
 					_alloc.construct(P, *First);
 			}
 			catch(const std::bad_alloc& ba) {
@@ -497,6 +504,20 @@ namespace ft {
 				throw ;
 			}
 			return P;
+		}
+
+		pointer ufill(pointer P, size_type n, const value_type &val) {
+			pointer Pt = P;
+			try	{
+				for (; 0 < n; --n, ++P)
+					_alloc.construct(P, val);
+			}
+			catch(const std::exception& e) {
+				for (; Pt != P; ++Pt)
+					_alloc.destroy(Pt);
+				std::cerr << e.what() << '\n';
+			}
+			
 		}
 
 		pointer fill(pointer P, size_type n, const value_type& val) {
@@ -545,16 +566,16 @@ namespace ft {
 		return !(lhs < rhs);
 	}
 
-	template <class T, class Alloc>
-	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) { x.swap(y); }
+	// template <class T, class Alloc>
+	// void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) { x.swap(y); }
 }
 
 
-// namespace std {
-// 	template <class T, class Alloc>
-//   	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) {
-// 		x.swap(y);
-// 	}
-// }
+namespace std {
+	template <class T, class Alloc>
+  	void swap (ft::vector<T,Alloc>& x, ft::vector<T,Alloc>& y) {
+		x.swap(y);
+	}
+}
 
 #endif
